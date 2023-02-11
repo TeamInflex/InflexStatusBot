@@ -43,7 +43,7 @@ async def bot_check(bot_username):
                 except Exception as e:
                     print(e)
         else:
-            status = f"\n\n🤖 **Bot**: @{bot_username}\n🟢 Status : **Oꜰꜰʟɪɴᴇ** ✅"
+            status = f"\n\n🤖 **Bot**: @{bot_username}\n🟢 Status : **Oɴʟɪɴᴇ** ✅"
         await app.read_chat_history(bot_username)
         return status
     except FloodWait as e:
