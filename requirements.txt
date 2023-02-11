@@ -1,0 +1,5 @@
+pyrogram
+tgcrypto
+pytz
+aioschedule
+python-dotenv
