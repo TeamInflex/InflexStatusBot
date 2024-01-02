@@ -21,8 +21,6 @@ CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 MESSAGE_ID = int(os.getenv("MESSAGE_ID"))
 TIME_ZONE = os.getenv("TIME_ZONE", "Asia/Kolkata")
 LOG_ID = int(os.getenv("LOG_ID"))
-SUPPORT_CHANNEL = int(os.getenv("SUPPORT_CHANNEL")
-SUPPORT_GROUP = int(os.getenv("SUPPORT_GROUP")
 CHECKING_TIME_MIN = int(os.getenv("CHECKING_TIME_MIN", "60"))
 CHANNEL_NAME = int(os.getenv("CHANNEL_NAME", "TeamInflex"))
 
@@ -54,16 +52,6 @@ async def main():
             date = time.strftime("%d %b %Y")
             time = time.strftime("%I:%M %p")
             TEXT += f"\n\n**𝖫𝖺𝗌𝗍 𝖢𝗁𝖾𝖼𝗄𝖾𝖽 𝖮𝗇 :**\n**𝖣𝖺𝗍𝖾 :** {date}\n**𝖳𝗂𝗆𝖾 :** {time}\n\n"
-
-            # Create InlineKeyboardMarkup
-            keyboard = [
-                [
-                    InlineKeyboardButton("𝖴𝗉𝖽𝖺𝗍𝖾𝗌", url=SUPPORT_CHANNEL),
-                    InlineKeyboardButton("𝖲𝗎𝗉𝗉𝗈𝗋𝗍", url=SUPPORT_GROUP),
-                ]
-            ]
-
-            reply_markup = InlineKeyboardMarkup(keyboard)
 
             # Edit the message with the new text and keyboard
             await app.edit_message_text(int(CHANNEL_ID), MESSAGE_ID, TEXT, reply_markup=reply_markup)
