@@ -30,13 +30,13 @@ async def main():
     print("Status Checker Bot Started, Dont Forgot To Visit @InflexSupport.")
     async with app:
         while True:
-            TEXT = "✨ **Welcome To The {CHANNEL_NAME} Bot's Status Channel**\n\n❄ Here Is the List Of The Bot's Which We Own And There Status ( Alive/Dead ), This Message Will Keep Updating On **Every {CHECKING_TIME_MIN} Minutes.**"
+            TEXT = f"✨ **Welcome To The {CHANNEL_NAME} Bot's Status Channel**\n\n❄ Here Is the List Of The Bot's Which We Own And There Status ( Alive/Dead ), This Message Will Keep Updating On **Every {CHECKING_TIME_MIN} Minutes.**"
 
             for bots in BOT_LIST:
                 Inflex = await app.get_users(f"@{bots}")
                 try:
                     await app.send_message(bots, "/InflexStatusBot")
-                    await asyncio.sleep(CHECKING_TIME_MIN)
+                    await asyncio.sleep(int(CHECKING_TIME_MIN))
                     messages = app.get_chat_history(bots, limit=1)
                     async for x in messages:
                         msg = x.text
