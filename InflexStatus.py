@@ -22,7 +22,7 @@ MESSAGE_ID = int(os.getenv("MESSAGE_ID"))
 TIME_ZONE = os.getenv("TIME_ZONE", "Asia/Kolkata")
 LOG_ID = int(os.getenv("LOG_ID"))
 CHECKING_TIME_MIN = int(os.getenv("CHECKING_TIME_MIN", "60"))
-CHANNEL_NAME = int(os.getenv("CHANNEL_NAME"))
+CHANNEL_NAME = Solo Tree
 
 async def main():
     print("Status Checker Bot Started, Dont Forgot To Visit @InflexSupport.")
