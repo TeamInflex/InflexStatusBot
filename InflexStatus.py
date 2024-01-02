@@ -30,7 +30,7 @@ async def main():
     print("Status Checker Bot Started, Dont Forgot To Visit @InflexSupport.")
     async with app:
         while True:
-            TEXT = "✨ **Welcome To The {CHANNEL_NAME} Bot's Status Channel**\n\n❄ Here Is the List Of The Bot's Which We Own And There Status ( Alive/Dead ), This Message Will Keep Updating On **Every {CHECKING_TIME_MIN} Minutes.**"
+            TEXT = "✨ **Welcome To The f"{CHANNEL_NAME}" Bot's Status Channel**\n\n❄ Here Is the List Of The Bot's Which We Own And There Status ( Alive/Dead ), This Message Will Keep Updating On **Every f"{CHECKING_TIME_MIN}" Minutes.**"
 
             for bots in BOT_LIST:
                 Inflex = await app.get_users(f"@{bots}")
