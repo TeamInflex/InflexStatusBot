@@ -1,74 +1,73 @@
+import os
 import asyncio
 import datetime
-
-import aioschedule
 import pytz
+from dotenv import load_dotenv
 from pyrogram import Client
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors import FloodWait
 
-from config import (API_HASH, API_ID, BOT_ADMIN_IDS, BOT_LIST,
-                    CHANNEL_OR_GROUP_ID, CHECK_DELAY, MESSAGE_ID,
-                    SESSION_STRING, TIME_ZONE)
+load_dotenv()
 
 app = Client(
-    'BOT',
-    API_ID,
-    API_HASH,
-    session_string=SESSION_STRING,
-    in_memory=True
+    name="Inflex",
+    api_id=int(os.getenv("API_ID")),
+    api_hash=os.getenv("API_HASH"),
+    session_string=os.getenv("STRING_SESSION")
 )
 
-async def bot_check(bot_username):
-    """Checks if bot is online or not
+BOT_LIST = [x.strip() for x in os.getenv("BOT_LIST").split(' ')]
+CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
+MESSAGE_ID = int(os.getenv("MESSAGE_ID"))
+TIME_ZONE = os.getenv("TIME_ZONE", "Asia/Kolkata")
+LOG_ID = int(os.getenv("LOG_ID"))
+SUPPORT_CHANNEL = int(os.getenv("SUPPORT_CHANNEL", "https://t.me/TeamInflex"))
+SUPPORT_GROUP = int(os.getenv("SUPPORT_GROUP", "https://t.me/InflexSupport"))
+CHECKING_TIME_MIN = int(os.getenv("CHECKING_TIME_MIN", "60"))
+CHANNEL_NAME = int(os.getenv("CHANNEL_NAME", "TeamInflex"))
 
-    Args:
-        bot_username (str): bot username to check
-
-    Returns:
-        str: bot status
-    """
-    try:
-        checker_status = await app.send_message(bot_username, "/start")
-        first_message_id = checker_status.id
-        await asyncio.sleep(5)
-        async for message in app.get_chat_history(bot_username, limit=1):
-            second_message_id = message.id
-        if first_message_id == second_message_id:
-            status = f"\n\n🤖 **Bot**: @{bot_username}\n🔴 Status : **Oꜰꜰʟɪɴᴇ** ❌"
-            for bot_admin_id in BOT_ADMIN_IDS:
-                if bot_admin_id.isnumeric():
-                    bot_admin_id = int(bot_admin_id)
-                try:
-                    await app.send_message(bot_admin_id, f"🚨 **Notification** 🚨\n\n» @{bot_username} is **Oꜰꜰʟɪɴᴇ** ❌")
-                except Exception as e:
-                    print(e)
-        else:
-            status = f"\n\n🤖 **Bot**: @{bot_username}\n🟢 Status : **Oɴʟɪɴᴇ** ✅"
-        await app.read_chat_history(bot_username)
-        return status
-    except FloodWait as e:
-        await asyncio.sleep(e.x)
-
-
-async def status_checker():
-    message = f"💡 **🔗 Wᴇʟᴄᴏᴍᴇ Tᴏ Iɴꜰʟᴇx Bᴏᴛ'ꜱ Sᴛᴀᴛᴜꜱ Cʜᴀɴɴᴇʟ .** 💡\n\n**🔗 Tʜɪꜱ Iꜱ Lɪᴠᴇ Sᴛᴀᴛᴜꜱ Oꜰ Aʟʟ Iɴꜰʟᴇx Bᴏᴛꜱ. Tʜɪꜱ Mᴇꜱꜱᴀɢᴇ Kᴇᴇᴘꜱ Oɴ Uᴘᴅᴀᴛɪɴɢ Iɴ Eᴠᴇʀʏ 60 Mɪɴꜱ Wɪᴛʜ Lɪᴠᴇ Sᴛᴀᴛᴜꜱ Oꜰ Aʟʟ Iɴꜰʟᴇx Bᴏᴛꜱ Wʜᴇᴛʜᴇʀ Tʜᴇʏ Aʀᴇ Oɴʟɪɴᴇ / Oꜰꜰʟɪɴᴇ .**"
-    for bot in BOT_LIST:
-        message += await bot_check(bot)
-    time = datetime.datetime.now(pytz.timezone(f"{TIME_ZONE}"))
-    last_update = time.strftime("%d %b %Y at %I:%M %p")
-    message += f"\n\n🛂 Lᴀꜱᴛ Cʜᴇᴄᴋ : {last_update} ({TIME_ZONE})\n\n🟡 **Iᴛ Wɪʟʟ Bᴇ Uᴘᴅᴀᴛᴇᴅ Eᴠᴇʀʏ {CHECK_DELAY} Seconds ({int(CHECK_DELAY/60)} Minutes)**"
-    await app.edit_message_text(int(CHANNEL_OR_GROUP_ID), MESSAGE_ID, message)
-    print(f"Last Check: {last_update}")
-                        
 async def main():
-    await app.start()
-    info = await app.get_me()
-    print(f'[INFO] @{info.username} STARTED!')
-    await status_checker()
-    aioschedule.every(CHECK_DELAY).seconds.do(status_checker)
+    print("Status Checker Bot Started, Dont Forgot To Visit @InflexSupport.")
+    async with app:
+        while True:
+            TEXT = "✨ **Welcome To The {CHANNEL_NAME} Bot's Status Channel**\n\n❄ Here Is the List Of The Bot's Which We Own And There Status ( Alive/Dead ), This Message Will Keep Updating On **Every {CHECKING_TIME_MIN} Minutes.**"
 
-    while True:
-        await aioschedule.run_pending()
-        await asyncio.sleep(10)
-        
-asyncio.get_event_loop().run_until_complete(main())
+            for bots in BOT_LIST:
+                Inflex = await app.get_users(f"@{bots}")
+                try:
+                    await app.send_message(bots, "/InflexStatusBot")
+                    await asyncio.sleep(CHECKING_TIME_MIN)
+                    messages = app.get_chat_history(bots, limit=1)
+                    async for x in messages:
+                        msg = x.text
+                    if msg == "/InflexStatusBot":
+                        TEXT += f"\n\n**╭⎋ [{Inflex.first_name}](tg://openmessage?user_id={Inflex.id})** \n**╰⊚ 𝖲𝗍𝖺𝗍𝗎𝗌 : 𝖣𝖾𝖺𝖽 💤**"
+                        await app.send_message(LOG_ID, f"**[{Inflex.first_name}](tg://openmessage?user_id={Inflex.id}) 𝖮𝖿𝖿 𝖧𝖺𝗂, 𝖠𝖼𝖼𝗁𝖺 𝖧𝗎𝖺 𝖣𝖾𝗄𝗁 𝖫𝗂𝗒𝖺 𝖬𝖺𝗂𝗇𝖾.**")
+                        await app.read_chat_history(bots)
+                    else:
+                        TEXT += f"\n\n**╭⎋ [{Inflex.first_name}](tg://openmessage?user_id={Inflex.id}) : 𝖠𝗅𝗂𝗏𝖾 🫧**\n**╰⊚** {msg}"
+                        await app.read_chat_history(bots)
+                except FloodWait as e:
+                    await asyncio.sleep(e.value)
+
+            time = datetime.datetime.now(pytz.timezone(f"{TIME_ZONE}"))
+            date = time.strftime("%d %b %Y")
+            time = time.strftime("%I:%M %p")
+            TEXT += f"\n\n**𝖫𝖺𝗌𝗍 𝖢𝗁𝖾𝖼𝗄𝖾𝖽 𝖮𝗇 :**\n**𝖣𝖺𝗍𝖾 :** {date}\n**𝖳𝗂𝗆𝖾 :** {time}\n\n"
+
+            # Create InlineKeyboardMarkup
+            keyboard = [
+                [
+                    InlineKeyboardButton("𝖴𝗉𝖽𝖺𝗍𝖾𝗌", url=SUPPORT_CHANNEL),
+                    InlineKeyboardButton("𝖲𝗎𝗉𝗉𝗈𝗋𝗍", url=SUPPORT_GROUP),
+                ]
+            ]
+
+            reply_markup = InlineKeyboardMarkup(keyboard)
+
+            # Edit the message with the new text and keyboard
+            await app.edit_message_text(int(CHANNEL_ID), MESSAGE_ID, TEXT, reply_markup=reply_markup)
+
+            await asyncio.sleep(120)
+
+app.run(main())
