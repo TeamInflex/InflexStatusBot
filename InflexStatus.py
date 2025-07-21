@@ -33,7 +33,7 @@ async def main():
             for bots in BOT_LIST:
                 Inflex = await app.get_users(f"@{bots}")
                 try:
-                    await app.send_message(bots, "/InflexStatusBot")
+                    await app.send_message(bots, "/ping")
                     await asyncio.sleep(int(CHECKING_TIME_MIN))
                     messages = app.get_chat_history(bots, limit=1)
                     async for x in messages:
