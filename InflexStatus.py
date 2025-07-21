@@ -21,10 +21,10 @@ CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 MESSAGE_ID = int(os.getenv("MESSAGE_ID"))
 TIME_ZONE = os.getenv("TIME_ZONE", "Asia/Kolkata")
 LOG_ID = int(os.getenv("LOG_ID"))
-CHECKING_TIME_MIN = int(os.getenv("CHECKING_TIME_MIN", "5"))
+CHECKING_TIME_MIN = int(os.getenv("CHECKING_TIME_MIN", "60"))
 CHANNEL_NAME = "Solo Tree"
 
-# Optional reply markup
+# Optional reply markup with a support button
 reply_markup = InlineKeyboardMarkup(
     [[InlineKeyboardButton("🛠 Support", url="https://t.me/InflexSupport")]]
 )
@@ -43,7 +43,7 @@ async def main():
                 try:
                     bot = await app.get_users(f"@{bot_username}")
                     await app.send_message(bot.id, "/start")
-                    await asyncio.sleep(3)
+                    await asyncio.sleep(5)
 
                     messages = app.get_chat_history(bot.id, limit=1)
                     msg_text = ""
@@ -79,7 +79,7 @@ async def main():
 
             await app.edit_message_text(CHANNEL_ID, MESSAGE_ID, TEXT, reply_markup=reply_markup)
 
-            # Wait for CHECKING_TIME_MIN * 360 seconds
-            await asyncio.sleep(CHECKING_TIME_MIN * 360)
+            # Sleep for CHECKING_TIME_MIN * 60 seconds
+            await asyncio.sleep(CHECKING_TIME_MIN * 60)
 
 app.run(main())
