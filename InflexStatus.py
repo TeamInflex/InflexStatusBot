@@ -16,7 +16,7 @@ app = Client(
     session_string=os.getenv("STRING_SESSION")
 )
 
-BOT_LIST = [x.strip() for x in os.getenv("BOT_LIST").split(' ')]
+BOT_LIST = [x.strip() for x in os.getenv("BOT_LIST").split()]
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 MESSAGE_ID = int(os.getenv("MESSAGE_ID"))
 TIME_ZONE = os.getenv("TIME_ZONE", "Asia/Kolkata")
@@ -24,38 +24,62 @@ LOG_ID = int(os.getenv("LOG_ID"))
 CHECKING_TIME_MIN = int(os.getenv("CHECKING_TIME_MIN", "5"))
 CHANNEL_NAME = "Solo Tree"
 
+# Optional reply markup
+reply_markup = InlineKeyboardMarkup(
+    [[InlineKeyboardButton("🛠 Support", url="https://t.me/InflexSupport")]]
+)
+
 async def main():
-    print("Status Checker Bot Started, Dont Forgot To Visit @InflexSupport.")
+    print("Status Checker Bot Started, Don't forget to visit @InflexSupport.")
     async with app:
         while True:
-            TEXT = f"✨ **Welcome To The {CHANNEL_NAME} Bot's Status Channel**\n\n❄ Here Is the List Of The Bot's Which We Own And There Status ( Alive/Dead ), This Message Will Keep Updating On **Every {CHECKING_TIME_MIN} Minutes.**"
+            TEXT = (
+                f"✨ **Welcome To The {CHANNEL_NAME} Bot's Status Channel**\n\n"
+                f"❄ Here is the list of bots we own and their status (Alive/Dead).\n"
+                f"This message updates every **{CHECKING_TIME_MIN} minutes.**"
+            )
 
-            for bots in BOT_LIST:
-                Inflex = await app.get_users(f"@{bots}")
+            for bot_username in BOT_LIST:
                 try:
-                    await app.send_message(bots, "/Start")
-                    await asyncio.sleep(int(CHECKING_TIME_MIN))
-                    messages = app.get_chat_history(bots, limit=1)
-                    async for x in messages:
-                        msg = x.text
-                    if msg == "/Start":
-                        TEXT += f"\n\n**╭⎋ [{Inflex.first_name}](tg://openmessage?user_id={Inflex.id})** \n**╰⊚ 𝖲𝗍𝖺𝗍𝗎𝗌 : 𝖣𝖾𝖺𝖽 💤**"
-                        await app.send_message(LOG_ID, f"**[{Inflex.first_name}](tg://openmessage?user_id={Inflex.id}) 𝖮𝖿𝖿 𝖧𝖺𝗂, 𝖠𝖼𝖼𝗁𝖺 𝖧𝗎𝖺 𝖣𝖾𝗄𝗁 𝖫𝗂𝗒𝖺 𝖬𝖺𝗂𝗇𝖾.**")
-                        await app.read_chat_history(bots)
+                    bot = await app.get_users(f"@{bot_username}")
+                    await app.send_message(bot.id, "/start")
+                    await asyncio.sleep(3)
+
+                    messages = app.get_chat_history(bot.id, limit=1)
+                    msg_text = ""
+                    async for msg in messages:
+                        msg_text = msg.text or ""
+
+                    if msg_text.strip() == "/start":
+                        TEXT += (
+                            f"\n\n**╭⎋ [@{bot_username}](https://t.me/{bot_username})**\n"
+                            f"**╰⊚ 𝖲𝗍𝖺𝗍𝗎𝗌 : 𝖣𝖾𝖺𝖽 💤**"
+                        )
+                        await app.send_message(
+                            LOG_ID,
+                            f"**[@{bot_username}](https://t.me/{bot_username}) 𝖮𝖿𝖿 𝖧𝖺𝗂, 𝖠𝖼𝖼𝗁𝖺 𝖧𝗎𝖺 𝖣𝖾𝗄𝗁 𝖫𝗂𝗒𝖺 𝖬𝖺𝗂𝗇𝖾.**"
+                        )
+                        await app.read_chat_history(bot.id)
                     else:
-                        TEXT += f"\n\n**╭⎋ [{Inflex.first_name}](tg://openmessage?user_id={Inflex.id}) : 𝖠𝗅𝗂𝗏𝖾 🫧**\n**╰⊚** {msg}"
-                        await app.read_chat_history(bots)
+                        TEXT += (
+                            f"\n\n**╭⎋ [@{bot_username}](https://t.me/{bot_username}) : 𝖠𝗅𝗂𝗏𝖾 🫧**\n"
+                            f"**╰⊚** {msg_text}"
+                        )
+                        await app.read_chat_history(bot.id)
+
                 except FloodWait as e:
                     await asyncio.sleep(e.value)
+                except Exception as e:
+                    TEXT += f"\n\n**╭⎋ [@{bot_username}](https://t.me/{bot_username})**\n**╰⊚ Error: {e}**"
 
-            time = datetime.datetime.now(pytz.timezone(f"{TIME_ZONE}"))
-            date = time.strftime("%d %b %Y")
-            time = time.strftime("%I:%M %p")
-            TEXT += f"\n\n**𝖫𝖺𝗌𝗍 𝖢𝗁𝖾𝖼𝗄𝖾𝖽 𝖮𝗇 :**\n**𝖣𝖺𝗍𝖾 :** {date}\n**𝖳𝗂𝗆𝖾 :** {time}\n\n"
+            now = datetime.datetime.now(pytz.timezone(TIME_ZONE))
+            date = now.strftime("%d %b %Y")
+            time = now.strftime("%I:%M %p")
+            TEXT += f"\n\n**𝖫𝖺𝗌𝗍 𝖢𝗁𝖾𝖼𝗄𝖾𝖽 𝖮𝗇 :**\n**𝖣𝖺𝗍𝖾 :** {date}\n**𝖳𝗂𝗆𝖾 :** {time}\n"
 
-            # Edit the message with the new text and keyboard
-            await app.edit_message_text(int(CHANNEL_ID), MESSAGE_ID, TEXT, reply_markup=reply_markup)
+            await app.edit_message_text(CHANNEL_ID, MESSAGE_ID, TEXT, reply_markup=reply_markup)
 
-            await asyncio.sleep(120)
+            # Wait for CHECKING_TIME_MIN * 360 seconds
+            await asyncio.sleep(CHECKING_TIME_MIN * 360)
 
 app.run(main())
