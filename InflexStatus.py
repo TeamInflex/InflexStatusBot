@@ -21,7 +21,7 @@ CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 MESSAGE_ID = int(os.getenv("MESSAGE_ID"))
 TIME_ZONE = os.getenv("TIME_ZONE", "Asia/Kolkata")
 LOG_ID = int(os.getenv("LOG_ID"))
-CHECKING_TIME_MIN = int(os.getenv("CHECKING_TIME_MIN", "60"))
+CHECKING_TIME_MIN = int(os.getenv("CHECKING_TIME_MIN", "5"))
 CHANNEL_NAME = "Solo Tree"
 
 async def main():
@@ -33,12 +33,12 @@ async def main():
             for bots in BOT_LIST:
                 Inflex = await app.get_users(f"@{bots}")
                 try:
-                    await app.send_message(bots, "/InflexStatusBot")
+                    await app.send_message(bots, "/start")
                     await asyncio.sleep(int(CHECKING_TIME_MIN))
                     messages = app.get_chat_history(bots, limit=1)
                     async for x in messages:
                         msg = x.text
-                    if msg == "/InflexStatusBot":
+                    if msg == "/start
                         TEXT += f"\n\n**╭⎋ [{Inflex.first_name}](tg://openmessage?user_id={Inflex.id})** \n**╰⊚ 𝖲𝗍𝖺𝗍𝗎𝗌 : 𝖣𝖾𝖺𝖽 💤**"
                         await app.send_message(LOG_ID, f"**[{Inflex.first_name}](tg://openmessage?user_id={Inflex.id}) 𝖮𝖿𝖿 𝖧𝖺𝗂, 𝖠𝖼𝖼𝗁𝖺 𝖧𝗎𝖺 𝖣𝖾𝗄𝗁 𝖫𝗂𝗒𝖺 𝖬𝖺𝗂𝗇𝖾.**")
                         await app.read_chat_history(bots)
