@@ -33,12 +33,12 @@ async def main():
             for bots in BOT_LIST:
                 Inflex = await app.get_users(f"@{bots}")
                 try:
-                    await app.send_message(bots, "/start")
+                    await app.send_message(bots, "/Start")
                     await asyncio.sleep(int(CHECKING_TIME_MIN))
                     messages = app.get_chat_history(bots, limit=1)
                     async for x in messages:
                         msg = x.text
-                    if msg == "/start
+                    if msg == "/Start
                         TEXT += f"\n\n**╭⎋ [{Inflex.first_name}](tg://openmessage?user_id={Inflex.id})** \n**╰⊚ 𝖲𝗍𝖺𝗍𝗎𝗌 : 𝖣𝖾𝖺𝖽 💤**"
                         await app.send_message(LOG_ID, f"**[{Inflex.first_name}](tg://openmessage?user_id={Inflex.id}) 𝖮𝖿𝖿 𝖧𝖺𝗂, 𝖠𝖼𝖼𝗁𝖺 𝖧𝗎𝖺 𝖣𝖾𝗄𝗁 𝖫𝗂𝗒𝖺 𝖬𝖺𝗂𝗇𝖾.**")
                         await app.read_chat_history(bots)
